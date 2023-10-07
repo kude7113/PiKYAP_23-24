@@ -1,7 +1,8 @@
 import sqlite3
 import telebot
 import random
-
+from matplotlib import pyplot as plt
+from io import BytesIO
 bot = telebot.TeleBot('5782807787:AAEcV-5TiSrSzY-vM5i05HAn9o7aYCwRHzc')
 
 conn = sqlite3.connect('piski.sql')
@@ -79,6 +80,38 @@ def main(message):
         bot.send_message(message.chat.id, p)
     if top == []:
         bot.send_message(message.chat.id, 'У всех в этом чате письки равны 0')
+
+@bot.message_handler(commands = ['diagrama'])
+def main(message):
+    chat_id = message.chat.id
+    conn = sqlite3.connect('piski.sql')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM piski WHERE id_chat == '%d'" % (chat_id))
+    piski = cur.fetchall()
+    top = []
+    for el in piski:
+        top.append([el[3], el[4]])
+    top.sort()
+    dick = []
+    name = []
+    for i in range(len(top)):
+        dick.append(top[i][0])
+        name.append(top[i][1])
+    data = [20, 30, 50]
+    labels = ['Категория 1', 'Категория 2', 'Категория 3']
+
+    # Создаем круговую диаграмму
+    plt.figure(figsize=(6, 6))
+    plt.pie(dick, labels=name, autopct='%1.1f%%')
+    plt.title('Пример диаграммы')
+
+    # Сохраняем диаграмму во временный файл
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+
+    # Отправляем диаграмму в чат
+    bot.send_photo(message.chat.id, photo=buf)
 
 @bot.message_handler(commands = ['print'])
 def main(message):
