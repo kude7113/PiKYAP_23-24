@@ -23,32 +23,35 @@ def main(message):
         chat_id = message.chat.id
         user_id = message.from_user.id
         user_name = message.from_user.username
-        time = message.date
         piska = 0
+        time = message.date
         cur.execute('SELECT * FROM piski')
         piski = cur.fetchall()
         i = 0
         for el in piski:
             if chat_id == el[1] and user_id == el[2]:
-                cur.execute("SELECT * FROM piski WHERE id_chat == '%d' AND id_user == '%d'" % (chat_id, user_id))
-                user_info = cur.fetchone()
-                int_dat = user_info[5]
-                if message.date - int_dat < 86400:
-                    bot.send_message(message.chat.id, 'Эту команду можно использовать раз в 24 часа')
-                    break
-                else:
-                    i += 1
-                    rand = random.randint(-5, 10)
-                    cur.execute("UPDATE piski SET piska = piska + '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (rand, chat_id, user_id))
-                    q = ''
-                    if rand > 0:
-                        q = user_name + ' ваша писька выросла на ' + str(rand) + ' см'
-                    else:
-                        q = user_name + ' ваша писька сократилась на ' + str(abs(rand)) + ' см'
-                    bot.send_message(message.chat.id, q)
+                i += 1
         if i == 0:
             cur.execute("INSERT INTO piski (id_chat, id_user, piska, name, dat) VALUES ('%d', '%d','%d', '%s', '%d')" % (chat_id, user_id, piska, user_name, time))
 
+        cur.execute("SELECT * FROM piski WHERE id_chat == '%d' AND id_user == '%d'" % (chat_id, user_id))
+        user_info = cur.fetchone()
+        int_dat = user_info[5]
+
+        if time - int_dat > 10 or i == 0:
+            rand = random.randint(-5, 10)
+            cur.execute("UPDATE piski SET piska = piska + '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (
+            rand, chat_id, user_id))
+            cur.execute(
+                "UPDATE piski SET dat = '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (time, chat_id, user_id))
+            q = ''
+            if rand > 0:
+                q = user_name + ' ваша писька выросла на ' + str(rand) + ' см'
+            else:
+                q = user_name + ' ваша писька сократилась на ' + str(abs(rand)) + ' см'
+            bot.send_message(message.chat.id, q)
+        else:
+            bot.send_message(message.chat.id, 'Этой командой можно пользоваться раз в 24 часа!')
         conn.commit()
         cur.close()
         conn.close()
