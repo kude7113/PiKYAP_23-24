@@ -37,18 +37,20 @@ def main(message):
         cur.execute("SELECT * FROM piski WHERE id_chat == '%d' AND id_user == '%d'" % (chat_id, user_id))
         user_info = cur.fetchone()
         int_dat = user_info[5]
+        now_pisun = user_info[3]
 
         if time - int_dat > 10 or i == 0:
             rand = random.randint(-5, 10)
+            now_pisun += rand
             cur.execute("UPDATE piski SET piska = piska + '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (
             rand, chat_id, user_id))
             cur.execute(
                 "UPDATE piski SET dat = '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (time, chat_id, user_id))
             q = ''
             if rand > 0:
-                q = user_name + ' ваша писька выросла на ' + str(rand) + ' см'
+                q = user_name + ' ваша писька выросла на ' + str(rand) + ' см' + '\n' + 'Теперь ваш писюн: ' + str(now_pisun)
             else:
-                q = user_name + ' ваша писька сократилась на ' + str(abs(rand)) + ' см'
+                q = user_name + ' ваша писька сократилась на ' + str(abs(rand)) + ' см' + '\n' + 'Теперь ваш писюн: ' + str(now_pisun)
             bot.send_message(message.chat.id, q)
         else:
             bot.send_message(message.chat.id, 'Этой командой можно пользоваться раз в 24 часа!')
@@ -58,6 +60,25 @@ def main(message):
 
     else:
         bot.send_message(message.chat.id, 'Этой командой можно пользоваться только в группах')
+
+
+@bot.message_handler(commands = ['top_pisun'])
+def main(message):
+    chat_id = message.chat.id
+    conn = sqlite3.connect('piski.sql')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM piski WHERE id_chat == '%d'" % (chat_id))
+    piski = cur.fetchall()
+    top = []
+    for el in piski:
+        top.append([el[3], el[4]])
+    top.sort()
+    p = ''
+    for i in range(len(top)):
+        p += str(i + 1) + ') ' +str(top[i][1]) + ' - ' + str(top[i][0]) + 'см' + '\n'
+        bot.send_message(message.chat.id, p)
+    if top == []:
+        bot.send_message(message.chat.id, 'У всех в этом чате письки равны 0')
 
 @bot.message_handler(commands = ['print'])
 def main(message):
