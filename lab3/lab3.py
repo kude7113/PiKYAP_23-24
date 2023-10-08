@@ -3,7 +3,10 @@ import telebot
 import random
 from matplotlib import pyplot as plt
 from io import BytesIO
+
+
 bot = telebot.TeleBot('5782807787:AAEcV-5TiSrSzY-vM5i05HAn9o7aYCwRHzc')
+
 
 conn = sqlite3.connect('piski.sql')
 cur = conn.cursor()
@@ -40,7 +43,7 @@ def main(message):
         int_dat = user_info[5]
         now_pisun = user_info[3]
 
-        if time - int_dat > 10 or i == 0:
+        if time - int_dat > 86400 or i == 0:
             rand = random.randint(-5, 10)
             now_pisun += rand
             cur.execute("UPDATE piski SET piska = piska + '%d' WHERE id_chat == '%d' AND id_user == '%d'" % (
@@ -73,11 +76,11 @@ def main(message):
     top = []
     for el in piski:
         top.append([el[3], el[4]])
-    top.sort()
+    top.sort(reverse = True)
     p = ''
     for i in range(len(top)):
         p += str(i + 1) + ') ' +str(top[i][1]) + ' - ' + str(top[i][0]) + 'см' + '\n'
-        bot.send_message(message.chat.id, p)
+    bot.send_message(message.chat.id, p)
     if top == []:
         bot.send_message(message.chat.id, 'У всех в этом чате письки равны 0')
 
@@ -91,19 +94,21 @@ def main(message):
     top = []
     for el in piski:
         top.append([el[3], el[4]])
-    top.sort()
+    top.sort(reverse = True)
     dick = []
     name = []
     for i in range(len(top)):
         dick.append(top[i][0])
         name.append(top[i][1])
-    data = [20, 30, 50]
-    labels = ['Категория 1', 'Категория 2', 'Категория 3']
 
     # Создаем круговую диаграмму
     plt.figure(figsize=(6, 6))
+
+
+
     plt.pie(dick, labels=name, autopct='%1.1f%%')
-    plt.title('Пример диаграммы')
+    plt.title('Письки этого чата')
+    plt.legend()
 
     # Сохраняем диаграмму во временный файл
     buf = BytesIO()
