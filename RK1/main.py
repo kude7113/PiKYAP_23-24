@@ -31,7 +31,7 @@ class BookShop:
         self.Book_id = Book_id
 
 
-# Отделы
+# магазины
 Shops = [
     Shop(1, 'Достаевский'),
     Shop(2, 'Читай город'),
@@ -43,7 +43,7 @@ Shops = [
 
 # Сотрудники
 Books = [
-    Book(1, 'Герой нашего времени', 250, 1),
+    Book(1, 'Герой нашего времен', 250, 1),
     Book(2, 'Мастер и маргарита', 350, 2),
     Book(3, 'Заводной апельсин', 450, 3),
     Book(4, 'Три товарища', 350, 3),
@@ -56,7 +56,6 @@ Books_Shops = [
     BookShop(3, 3),
     BookShop(3, 4),
     BookShop(3, 5),
-
     BookShop(11, 1),
     BookShop(22, 2),
     BookShop(33, 3),
@@ -84,40 +83,31 @@ def main():
                     for Shop_name, Shop_id, Book_id in many_to_many_tBook
                     for e in Books if e.id == Book_id]
 
-    print('Задание А1')
+    print('Задание B1')
     res_11 = sorted(one_to_many, key=itemgetter(2))
     print(res_11)
 
-    print('\nЗадание А2')
+    print('\nЗадание B2')
     res_12_unsorted = []
-    # Перебираем все отделы
+    # Перебираем все магазины
     for d in Shops:
-        # Список сотрудников отдела
+        num = 0
+        # Список книг магазина
         d_Books = list(filter(lambda i: i[2] == d.name, one_to_many))
-        # Если отдел не пустой
         if len(d_Books) > 0:
-            # Зарплаты сотрудников отдела
-            d_prices = [price for _, price, _ in d_Books]
-            # Суммарная зарплата сотрудников отдела
-            d_prices_sum = sum(d_prices)
-            res_12_unsorted.append((d.name, d_prices_sum))
+            num += 1
+            res_12_unsorted.append((d.name, num))
 
-    # Сортировка по суммарной зарплате
     res_12 = sorted(res_12_unsorted, key=itemgetter(1), reverse=True)
     print(res_12)
 
-    print('\nЗадание А3')
+    print('\nЗадание B3')
     res_13 = {}
-    # Перебираем все отделы
-    for d in Shops:
-        if 'отдел' in d.name:
-            # Список сотрудников отдела
-            d_Books = list(filter(lambda i: i[2] == d.name, many_to_many))
-            # Только ФИО сотрудников
-            d_Books_names = [x for x, _, _ in d_Books]
-            # Добавляем результат в словарь
-            # ключ - отдел, значение - список фамилий
-            res_13[d.name] = d_Books_names
+    for d in Books:
+        if 'и' in d.name_b:
+            d_Shops = list(filter(lambda i: i[2] == d.id, many_to_many_tBook))
+            d_Shops_names = [x for x, _, _ in d_Shops]
+            res_13[d.name_b] = d_Shops_names
 
     print(res_13)
 
