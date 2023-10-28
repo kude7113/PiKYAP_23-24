@@ -102,7 +102,7 @@ def main(message):
         name.append(top[i][1])
 
     # Создаем круговую диаграмму
-    plt.figure(figsize=(6, 6))
+    plt.figure(figsize=(7, 6))
 
 
 
