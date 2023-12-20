@@ -11,7 +11,6 @@ class Book:
         self.price = price
         self.Shop_id = Shop_id
 
-
 class Shop:
     """Книжный магазин"""
 
@@ -63,6 +62,47 @@ Books_Shops = [
     BookShop(33, 5),
 ]
 
+one_to_many = [(e.name_b, e.price, d.name)
+                   for d in Shops
+                   for e in Books
+                   if e.Shop_id == d.id]
+
+many_to_many_tBook = [(d.name, ed.Shop_id, ed.Book_id)
+                    for d in Shops
+                    for ed in Books_Shops
+                    if d.id == ed.Shop_id]
+
+many_to_many = [(e.name_b, e.price, Shop_name)
+                    for Shop_name, Shop_id, Book_id in many_to_many_tBook
+                    for e in Books if e.id == Book_id]
+
+def B1(one_to_many):
+    #print('Задание B1')#
+    res_11 = sorted(one_to_many, key=itemgetter(2))
+    return res_11
+def B2(one_to_many):
+    #print('\nЗадание B2')
+    res_12_unsorted = []
+    # Перебираем все магазины
+    for d in Shops:
+        num = 0
+        # Список книг магазина
+        d_Books = list(filter(lambda i: i[2] == d.name, one_to_many))
+        if len(d_Books) > 0:
+            num += 1
+            res_12_unsorted.append((d.name, num))
+    res_12 = sorted(res_12_unsorted, key=itemgetter(1), reverse=True)
+    return res_12
+
+def B3(many_to_many_tBook):
+    print('\nЗадание B3')
+    res_13 = {}
+    for d in Books:
+        if 'и' in d.name_b:
+            d_Shops = list(filter(lambda i: i[2] == d.id, many_to_many_tBook))
+            d_Shops_names = [x for x, _, _ in d_Shops]
+            res_13[d.name_b] = d_Shops_names
+    return res_13
 
 def main():
     """Основная функция"""
@@ -82,7 +122,6 @@ def main():
     many_to_many = [(e.name_b, e.price, Shop_name)
                     for Shop_name, Shop_id, Book_id in many_to_many_tBook
                     for e in Books if e.id == Book_id]
-
     print('Задание B1')
     res_11 = sorted(one_to_many, key=itemgetter(2))
     print(res_11)
