@@ -45,7 +45,7 @@ class TestMain(unittest.TestCase):
                        if e.Shop_id == d.id]
         self.assertEquals(B2(one_to_many), [('Доставский', 1), ('Читай город', 1), ('Республика', 1)])
 
-    '''def test3(self):
+    def test3(self):
         many_to_many_tBook = [(d.name, ed.Shop_id, ed.Book_id)
                               for d in Shops
                               for ed in Books_Shops
@@ -54,6 +54,6 @@ class TestMain(unittest.TestCase):
                         for Shop_name, Shop_id, Book_id in many_to_many_tBook
                         for e in Books if e.id == Book_id]
         self.assertEquals(B3(many_to_many), {'Мастер и маргарита': ['Читай город', 'Московский дом книги'], 'Заводной апельсин': ['Республика', 'Ноты'], 'Три товарища': ['Республика', 'Ноты'], 'Портрет Дориана Грея': ['Республика', 'Ноты']})
-'''
+
 if __name__ == '__main__':
     unittest.main()
